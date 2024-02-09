@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  ynab4-to-gsheet:
+    build:
+      context: .
+    image: ynab4-to-gsheet:latest
+    env_file: .env
+    restart: "no"
+    volumes:
+      - ./credentials.json:/run/secrets/credentials.json:ro
+      - ./token.json:/run/secrets/token.json:ro
