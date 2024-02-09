@@ -144,4 +144,55 @@ def store_budgets(data, worksheet: gspread.worksheet.Worksheet):
 
 
 def store_transactions(data, worksheet: gspread.worksheet.Worksheet):
-    pass
+    transactions = [
+        [
+            "accountId",
+            "date",
+            "checkNumber",
+            "categoryId",
+            "amount",
+            "entityId",
+            "targetAccountId",
+        ]
+    ]
+    transactions[0].append(
+        """=ARRAYFORMULA({{"masterCategoryId";IF(ISBLANK(D2:D);"";XLOOKUP(D2:D;'YNAB/Categories'!$3:$3;'YNAB/Categories'!$1:$1;;0))}})"""
+    )
+    transactions[0].append(
+        """=ARRAYFORMULA({{"monthStart";IF(ISBLANK(B2:B);"";EOMONTH(B2:B;-1)+1)}})"""
+    )
+    if data.get("budgetMetaData").get("currencyLocale") != "hu_HU":
+        transactions[0].append(
+            """=ARRAYFORMULA({{"hufValue";ARRAYFORMULA(SUMIF('YNAB/Transactions'!C2:C;C2:C;'YNAB/Transactions'!E2:E))}})"""
+        )
+
+    for transaction in data.get("transactions"):
+        t = {}
+        if transaction.get("isTombstone", False):
+            continue
+        t["accountId"] = transaction.get("accountId")
+        t["date"] = transaction.get("date")
+        t["checkNumber"] = transaction.get("checkNumber", "")
+        if transaction.get("categoryId") == "Category/__Split__":
+            # Split transaction
+            if len(transaction.get("subTransactions")) == 0:
+                continue
+
+            for sub_transaction in transaction.get("subTransactions"):
+                t["categoryId"] = sub_transaction.get("categoryId")
+                t["amount"] = sub_transaction.get("amount")
+                t["entityId"] = sub_transaction.get("entityId")
+                t["targetAccountId"] = sub_transaction.get("targetAccountId", "")
+                transactions.append(list(t.values()))
+        else:
+            # regular transaction
+            t["categoryId"] = transaction.get("categoryId")
+            t["amount"] = transaction.get("amount")
+            t["entityId"] = transaction.get("entityId")
+            t["targetAccountId"] = transaction.get("targetAccountId", "")
+            transactions.append(list(t.values()))
+
+    worksheet.clear()
+    worksheet.resize(len(transactions), len(transactions[0]))
+    worksheet.update(transactions, raw=False)
+    worksheet.freeze(1, 0)

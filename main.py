@@ -1,7 +1,7 @@
 from config import init_config, get_config
 from dbx import find_latest_yfull
 from dropbox import Dropbox
-from gsheet import create_sheets, store_budgets, store_categories
+from gsheet import create_sheets, store_budgets, store_categories, store_transactions
 from gspread import oauth
 
 
@@ -18,3 +18,9 @@ if __name__ == "__main__":
     create_sheets(spreadsheet, list(config["BUDGET_EXTRA_TXN"].keys()))
     store_categories(main_budget_data, spreadsheet.worksheet("YNAB/Categories"))
     store_budgets(main_budget_data, spreadsheet.worksheet("YNAB/Budgets"))
+    store_transactions(main_budget_data, spreadsheet.worksheet("YNAB/Transactions"))
+    for cur, budget in config["BUDGET_EXTRA_TXN"].items():
+        data = find_latest_yfull(dbx, budget)
+        store_transactions(
+            data, spreadsheet.worksheet("YNAB/Transactions{}".format(cur))
+        )
