@@ -7,6 +7,7 @@ WORKDIR /app
 COPY \
     config.py \
     dbx.py \
+    gsheet.py \
     main.py \
     .
 
