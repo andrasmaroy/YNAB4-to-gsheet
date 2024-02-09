@@ -28,6 +28,7 @@ The following environment variables are used for configuration:
 * **GSPREAD_SHEET_NAME** - Name of the Google Sheet to store data in
 * **BUDGET** - YNAB4 budget file inside the YNAB folder (e.g. `Budget~06A6A692.ynab4`)
 * **BUDGET_EXTRA_TXN__<CUR>** - Additional budgets to be used for transactions in different currencies (e.g. `BUDGET_EXTRA_TXN__USD='USD Budget~22F69526.ynab4'`)
+* **LOG_LEVEL** - Set logging level, defaults to `INFO`
 
 ## References
 

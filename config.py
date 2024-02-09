@@ -11,6 +11,7 @@ def init_config():
             "GSPREAD_AUTHORIZED_USER_FILENAME",
             "GSPREAD_CREDENTIALS_FILENAME",
             "GSPREAD_SHEET_NAME",
+            "LOG_LEVEL",
         ],
     )
 
@@ -18,6 +19,7 @@ def init_config():
         {
             "GSPREAD_AUTHORIZED_USER_FILENAME": "/run/secrets/token.json",
             "GSPREAD_CREDENTIALS_FILENAME": "/run/secrets/credentials.json",
+            "LOG_LEVEL": "INFO",
         }
     )
 

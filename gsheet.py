@@ -1,4 +1,5 @@
 import gspread
+import logging
 
 from datetime import datetime
 
@@ -12,11 +13,14 @@ def create_sheets(spreadsheet: gspread.Spreadsheet, extra_txn_curs: list[str]):
     for cur in extra_txn_curs:
         ynab_sheets.append({"name": "Transactions{}".format(cur), "rows": 1, "cols": 7})
 
+    logging.debug("Sheets to create: {}".format(ynab_sheets))
     for sheet in ynab_sheets:
         try:
             # Try to get the worksheet; if it doesn't exist, create it
             spreadsheet.worksheet("YNAB/{}".format(sheet["name"]))
+            logging.info("'{}' exists already ".format("YNAB/{}".format(sheet["name"])))
         except gspread.exceptions.WorksheetNotFound:
+            logging.info("Creating '{}'".format("YNAB/{}".format(sheet["name"])))
             spreadsheet.add_worksheet(
                 title="YNAB/{}".format(sheet["name"]),
                 rows=sheet["rows"],
@@ -25,6 +29,7 @@ def create_sheets(spreadsheet: gspread.Spreadsheet, extra_txn_curs: list[str]):
 
 
 def store_categories(data, worksheet: gspread.worksheet.Worksheet):
+    logging.info("Storing categories")
     categories = [[], [], [], []]
     for master_category in data.get("masterCategories", []):
         # Empty master category, skip
@@ -65,6 +70,7 @@ def store_categories(data, worksheet: gspread.worksheet.Worksheet):
     worksheet.hide_rows(2, 3)
 
     # Merge master category cells over their subcategories
+    logging.info("Categories updated, merging master category cells")
     start_col = -1
     end_col = -1
     for i, master_category in enumerate(categories[1]):
@@ -78,6 +84,7 @@ def store_categories(data, worksheet: gspread.worksheet.Worksheet):
         if start_col != -1 and end_col != -1:
             start_cell = gspread.utils.rowcol_to_a1(2, start_col + 1)
             end_cell = gspread.utils.rowcol_to_a1(2, end_col)
+            logging.debug("Merging {}:{}".format(start_cell, end_cell))
             worksheet.merge_cells("{}:{}".format(start_cell, end_cell))
 
             start_col = i
@@ -85,6 +92,7 @@ def store_categories(data, worksheet: gspread.worksheet.Worksheet):
 
 
 def store_budgets(data, worksheet: gspread.worksheet.Worksheet):
+    logging.info("Storing budgets")
     budgets = [["", ""], ["", ""]]
 
     first_transaction_date = datetime.strptime(
@@ -114,6 +122,7 @@ def store_budgets(data, worksheet: gspread.worksheet.Worksheet):
         if datetime.strptime(budget.get("month"), "%Y-%m-%d") < first_transaction_date:
             continue
 
+        logging.debug("Processing '{}'".format(budget.get("month")))
         budgets[0].append(budget.get("entityId"))
         budgets[1].append(budget.get("month"))
         for subcategory_budget in budget.get("monthlySubCategoryBudgets"):
@@ -144,6 +153,7 @@ def store_budgets(data, worksheet: gspread.worksheet.Worksheet):
 
 
 def store_transactions(data, worksheet: gspread.worksheet.Worksheet):
+    logging.info("Storing transactions")
     transactions = [
         [
             "accountId",
