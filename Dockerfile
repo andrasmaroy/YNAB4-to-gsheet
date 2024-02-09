@@ -5,8 +5,9 @@ RUN pip install -r requirements.txt
 
 WORKDIR /app
 COPY \
-    main.py \
     config.py \
+    dbx.py \
+    main.py \
     .
 
 CMD python main.py
