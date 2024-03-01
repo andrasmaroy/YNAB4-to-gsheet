@@ -9,6 +9,7 @@ def init_config():
             "BUDGET",
             "DROPBOX_APP_KEY",
             "DROPBOX_APP_SECRET",
+            "DROPBOX_OAUTH_TOKEN_FILENAME",
             "GSPREAD_AUTHORIZED_USER_FILENAME",
             "GSPREAD_CREDENTIALS_FILENAME",
             "GSPREAD_SHEET_NAME",
