@@ -9,3 +9,4 @@ services:
     volumes:
       - ./credentials.json:/run/secrets/credentials.json:ro
       - ./token.json:/run/secrets/token.json:ro
+      - ./token-dropbox.json:/run/secrets/token-dropbox.json:ro
