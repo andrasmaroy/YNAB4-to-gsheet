@@ -24,7 +24,9 @@ Follow the steps in the [official documentation](https://docs.gspread.org/en/lat
 
 The following environment variables are used for configuration:
 
-* **DROPBOX_ACCESS_TOKEN** - access token for the Dropbox API app from above
+* **DROPBOX_APP_KEY** - Dropbox APP key from Dropbox App Console above
+* **DROPBOX_APP_SECRET** - Dropbox APP secret from Dropbox App Console above
+* **DROPBOX_OAUTH_TOKEN_FILENAME** - Dropbox OAuth2 token file, generate with `python dropbox_oauth.py` after installing requirements
 * **GSPREAD_AUTHORIZED_USER_FILENAME** - Google OAuth authorized user json file path, defaults to `/run/secrets/token.json`
 * **GSPREAD_CREDENTIALS_FILENAME** - Google OAuth credentials json file path, defaults to `/run/secrets/credentials.json`
 * **GSPREAD_SHEET_NAME** - Name of the Google Sheet to store data in
