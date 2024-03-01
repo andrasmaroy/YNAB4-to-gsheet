@@ -2,6 +2,9 @@
 credentials.json
 token.json
 
+# Dropbox OAuth files
+token-dropbox.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

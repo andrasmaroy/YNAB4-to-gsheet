@@ -12,7 +12,9 @@ In order for this to work one has to do some additional setup:
 
 ### Dropbox
 
-Register a Dropbox API app in the [App Console](https://www.dropbox.com/developers/apps). Needs the `files.content.read` permission. Generate an access token which will be used to access the files.
+Register a Dropbox API app in the [App Console](https://www.dropbox.com/developers/apps). Needs the `files.content.read` permission.
+
+Get an OAuth2 access token from Dropbox using the `dropbox_oauth.py` script. The resulting token will be saved as `token-dropbox.json`, keep it safe.
 
 ### Google
 
