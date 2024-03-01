@@ -26,7 +26,7 @@ The following environment variables are used for configuration:
 
 * **DROPBOX_APP_KEY** - Dropbox APP key from Dropbox App Console above
 * **DROPBOX_APP_SECRET** - Dropbox APP secret from Dropbox App Console above
-* **DROPBOX_OAUTH_TOKEN_FILENAME** - Dropbox OAuth2 token file, generate with `python dropbox_oauth.py` after installing requirements
+* **DROPBOX_OAUTH_TOKEN_FILENAME** - Dropbox OAuth2 token file, generate with `python dropbox_oauth.py` after installing requirements, defaults to `/run/secrets/token-dropbox.json`
 * **GSPREAD_AUTHORIZED_USER_FILENAME** - Google OAuth authorized user json file path, defaults to `/run/secrets/token.json`
 * **GSPREAD_CREDENTIALS_FILENAME** - Google OAuth credentials json file path, defaults to `/run/secrets/credentials.json`
 * **GSPREAD_SHEET_NAME** - Name of the Google Sheet to store data in
