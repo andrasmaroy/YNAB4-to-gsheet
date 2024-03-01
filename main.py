@@ -6,7 +6,14 @@ from datetime import datetime
 from dbx import find_latest_yfull
 from dropbox import Dropbox
 from dropbox.oauth import OAuth2FlowNoRedirectResult
-from gsheet import create_sheets, store_budgets, store_categories, store_transactions
+from gsheet import (
+    create_sheets,
+    store_budgets,
+    store_categories,
+    store_transactions,
+    is_knowledge_up_to_date,
+    update_saved_knowledge,
+)
 from gspread import oauth
 
 
@@ -47,11 +54,28 @@ if __name__ == "__main__":
     spreadsheet = gc.open(config["GSPREAD_SHEET_NAME"])
 
     create_sheets(spreadsheet, list(config["BUDGET_EXTRA_TXN"].keys()))
-    store_categories(main_budget_data, spreadsheet.worksheet("YNAB/Categories"))
-    store_budgets(main_budget_data, spreadsheet.worksheet("YNAB/Budgets"))
-    store_transactions(main_budget_data, spreadsheet.worksheet("YNAB/Transactions"))
+    if is_knowledge_up_to_date(
+        main_budget_data, spreadsheet.worksheet("YNAB/Transactions")
+    ):
+        logging.info("Sheet is up to date, skipping")
+    else:
+        store_categories(main_budget_data, spreadsheet.worksheet("YNAB/Categories"))
+        store_budgets(main_budget_data, spreadsheet.worksheet("YNAB/Budgets"))
+        store_transactions(main_budget_data, spreadsheet.worksheet("YNAB/Transactions"))
+        update_saved_knowledge(
+            main_budget_data, spreadsheet.worksheet("YNAB/Transactions")
+        )
+
     for cur, budget in config["BUDGET_EXTRA_TXN"].items():
         data = find_latest_yfull(dbx, budget)
-        store_transactions(
+        if is_knowledge_up_to_date(
             data, spreadsheet.worksheet("YNAB/Transactions{}".format(cur))
-        )
+        ):
+            logging.info("Sheet is up to date, skipping")
+        else:
+            store_transactions(
+                data, spreadsheet.worksheet("YNAB/Transactions{}".format(cur))
+            )
+            update_saved_knowledge(
+                data, spreadsheet.worksheet("YNAB/Transactions{}".format(cur))
+            )

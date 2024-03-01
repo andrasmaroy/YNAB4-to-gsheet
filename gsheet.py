@@ -28,6 +28,20 @@ def create_sheets(spreadsheet: gspread.Spreadsheet, extra_txn_curs: list[str]):
             )
 
 
+def is_knowledge_up_to_date(data, worksheet: gspread.worksheet.Worksheet) -> bool:
+    yfull_knowledge = data.get("fileMetaData").get("currentKnowledge")
+    logging.info("Current knowledge in yfull: {}".format(yfull_knowledge))
+    current_knowledge = worksheet.get_note('A1')
+    logging.info("Current knowledge in sheet: {}".format(current_knowledge))
+    return yfull_knowledge == current_knowledge
+
+
+def update_saved_knowledge(data, worksheet: gspread.worksheet.Worksheet):
+    yfull_knowledge = data.get("fileMetaData").get("currentKnowledge")
+    worksheet.update_note('A1', yfull_knowledge)
+    logging.info("Updated knowledge in sheet to: {}".format(yfull_knowledge))
+
+
 def store_categories(data, worksheet: gspread.worksheet.Worksheet):
     logging.info("Storing categories")
     categories = [[], [], [], []]
