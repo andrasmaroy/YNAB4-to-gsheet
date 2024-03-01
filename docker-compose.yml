@@ -3,7 +3,7 @@ services:
   ynab4-to-gsheet:
     build:
       context: .
-    image: ynab4-to-gsheet:latest
+    image: ghcr.io/andrasmaroy/ynab4-to-gsheet:latest
     env_file: .env
     restart: "no"
     volumes:
