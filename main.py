@@ -15,6 +15,7 @@ from gsheet import (
     update_saved_knowledge,
 )
 from gspread import oauth
+from mnb import update_currency_rate
 
 
 if __name__ == "__main__":
@@ -79,3 +80,6 @@ if __name__ == "__main__":
             update_saved_knowledge(
                 data, spreadsheet.worksheet("YNAB/Transactions{}".format(cur))
             )
+
+    for cur, _ in config["BUDGET_EXTRA_TXN"].items():
+        update_currency_rate(cur, spreadsheet.worksheet("MNB"))

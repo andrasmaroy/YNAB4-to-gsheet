@@ -9,6 +9,7 @@ COPY \
     dbx.py \
     gsheet.py \
     main.py \
+    mnb.py \
     .
 
 CMD python main.py
