@@ -35,7 +35,11 @@ def update_currency_rate(currency: str, worksheet: gspread.worksheet.Worksheet):
         )
     )
     response = requests.get(url, params=params)
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        logging.error("Failed to fetch MNB data: {}".format(e))
+        return
 
     root = etree.HTML(response.text)
     content = root.xpath("//table[1]/tbody/tr")
