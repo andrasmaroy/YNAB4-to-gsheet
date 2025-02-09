@@ -15,6 +15,7 @@ from gsheet import (
     update_saved_knowledge,
 )
 from gspread import oauth
+from ksh import update_inflation_rate
 from mnb import update_currency_rate
 
 
@@ -83,3 +84,5 @@ if __name__ == "__main__":
 
     for cur, _ in config["BUDGET_EXTRA_TXN"].items():
         update_currency_rate(cur, spreadsheet.worksheet("MNB"))
+
+    update_inflation_rate(spreadsheet.worksheet("KSH"))

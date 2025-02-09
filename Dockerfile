@@ -8,6 +8,7 @@ COPY \
     config.py \
     dbx.py \
     gsheet.py \
+    ksh.py \
     main.py \
     mnb.py \
     .
