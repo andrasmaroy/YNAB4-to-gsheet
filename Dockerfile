@@ -11,6 +11,7 @@ COPY \
     ksh.py \
     main.py \
     mnb.py \
+    stocks.py \
     .
 
 CMD python main.py

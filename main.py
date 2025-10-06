@@ -17,6 +17,7 @@ from gsheet import (
 from gspread import oauth
 from ksh import update_inflation_rate
 from mnb import update_currency_rate
+import stocks
 
 
 if __name__ == "__main__":
@@ -68,6 +69,7 @@ if __name__ == "__main__":
             main_budget_data, spreadsheet.worksheet("YNAB/Transactions")
         )
 
+    stock = stocks.Stocks()
     for cur, budget in config["BUDGET_EXTRA_TXN"].items():
         data = find_latest_yfull(dbx, budget)
         if is_knowledge_up_to_date(
@@ -81,8 +83,10 @@ if __name__ == "__main__":
             update_saved_knowledge(
                 data, spreadsheet.worksheet("YNAB/Transactions{}".format(cur))
             )
+        stock.add_to_portfolio(data)
 
-    for cur, _ in config["BUDGET_EXTRA_TXN"].items():
         update_currency_rate(cur, spreadsheet.worksheet("MNB"))
+
+    stock.get_historical_rates(spreadsheet.worksheet("yfinance"))
 
     update_inflation_rate(spreadsheet.worksheet("KSH"))
