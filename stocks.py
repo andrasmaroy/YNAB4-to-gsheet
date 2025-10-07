@@ -24,6 +24,8 @@ class Stocks(object):
                 continue
             if not filter.match(txn["checkNumber"]):
                 continue
+            if txn.get("isTombstone", False):
+                continue
             parts = txn["checkNumber"].split(" ")
             if len(parts) != 2:
                 continue
@@ -31,7 +33,6 @@ class Stocks(object):
                 portfolio[parts[1]] = int(parts[0])
             else:
                 portfolio[parts[1]] += int(parts[0])
-        # portfolio = dict((k, v) for k, v in portfolio.items() if v > 0)
         self.portfolio |= portfolio
 
     def get_historical_rates(self, worksheet):
