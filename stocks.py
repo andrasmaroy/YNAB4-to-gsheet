@@ -18,7 +18,7 @@ class Stocks(object):
 
     def add_to_portfolio(self, data: dict):
         portfolio = {}
-        filter = re.compile(r"^-?\d+ [A-Z]{3}:[A-Z]+$")
+        filter = re.compile(r"^-?\d+ [A-Z]+.[A-Z]+$")
         for txn in data["transactions"]:
             if "checkNumber" not in txn:
                 continue
