@@ -17,6 +17,7 @@ from gsheet import (
 from gspread import oauth
 from ksh import update_inflation_rate
 from mnb import update_currency_rate
+from portfolio import update_portfolio_ratios
 import stocks
 
 
@@ -88,5 +89,5 @@ if __name__ == "__main__":
         update_currency_rate(cur, spreadsheet.worksheet("MNB"))
 
     stock.get_historical_rates(spreadsheet.worksheet("yfinance"))
-
+    update_portfolio_ratios(spreadsheet.worksheet("Portfolio"))
     update_inflation_rate(spreadsheet.worksheet("KSH"))
