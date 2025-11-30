@@ -276,7 +276,7 @@ class Stocks(object):
 
                         if not day_data.empty:
                             # Merge the 1-day data into the main dataframe
-                            data = data.combine_first(day_data)
+                            data.update(day_data)
                             logging.info(
                                 "Successfully fetched 1-day data for {}".format(ticker)
                             )
