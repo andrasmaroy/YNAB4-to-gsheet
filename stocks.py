@@ -1,9 +1,10 @@
 import gspread
 import logging
+import pandas as pd
 import re
 import yfinance as yf
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 
 class Stocks(object):
@@ -257,7 +258,18 @@ class Stocks(object):
                 for ticker in nan_tickers:
                     try:
                         logging.info("Fetching last day data for {}".format(ticker))
-                        day_data = yf.download(ticker, period="1d", progress=False)
+                        info = yf.Ticker(ticker).info
+
+                        prevDate = date.fromtimestamp(info['regularMarketTime'])
+                        prevDateIndex = datetime(prevDate.year, prevDate.month, prevDate.day)
+
+                        values = [info['previousClose'], info['dayHigh'], info['dayLow'], info['open'], info['volume']]
+                        index = pd.DatetimeIndex([prevDateIndex], name='Date')
+                        cols = pd.MultiIndex.from_product([
+                            ['Close', 'High', 'Low', 'Open', 'Volume'], [ticker]
+                        ], names=['Price', 'Ticker'])
+
+                        day_data = pd.DataFrame([values], columns=cols, index=index)
 
                         if not day_data.empty:
                             # Merge the 1-day data into the main dataframe
