@@ -39,9 +39,15 @@ def update_portfolio_ratios(worksheet: gspread.worksheet.Worksheet):
 
     logging.info("Updating portfolio ratios: {}".format(ratios))
 
+    cell_list = []
     for region, ratio in ratios.items():
         cell = worksheet.find(region, in_column=15)
         if cell is None:
             logging.warning("Region {} not found in portfolio sheet".format(region))
             continue
-        worksheet.update_cell(cell.row, 17, ratio, 2)
+        cell_to_update = worksheet.cell(cell.row, 17)
+        cell_to_update.value = ratio
+        cell_list.append(cell_to_update)
+
+    logging.info("Updating cells: {}".format(cell_list))
+    worksheet.update_cells(cell_list, gspread.utils.ValueInputOption.user_entered)
