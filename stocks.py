@@ -148,18 +148,21 @@ class Stocks(object):
 
         return new_tickers, existing_tickers
 
-    def _detect_all_nan_tickers(self, data, all_tickers):
-        """Detect tickers where all Close values are NaN."""
-        nan_tickers = []
+    def _detect_missing_ticker_data(self, data, all_tickers):
+        """Detect tickers where all Close values are NaN or Volume is 0."""
+        tickers_missing_data = []
 
         for ticker in all_tickers:
             # Single ticker: column is "Close", multiple tickers: column is ("Close", ticker)
             close_col = "Close" if len(all_tickers) == 1 else ("Close", ticker)
+            volume_col = "Volume" if len(all_tickers) == 1 else ("Volume", ticker)
 
             if close_col in data.columns and data[close_col].isna().all():
-                nan_tickers.append(ticker)
+                tickers_missing_data.append(ticker)
+            elif volume_col in data.columns and data[volume_col].max() == 0:
+                tickers_missing_data.append(ticker)
 
-        return nan_tickers
+        return tickers_missing_data
 
     def _fetch_ticker_data(
         self, worksheet, new_tickers, existing_tickers, sheet_dates, sheet_tickers
@@ -245,17 +248,17 @@ class Stocks(object):
                 return {}
 
             # Detect tickers with all NaN Close values
-            nan_tickers = self._detect_all_nan_tickers(data, all_tickers)
+            tickers_missing_data = self._detect_missing_ticker_data(data, all_tickers)
 
-            if nan_tickers:
+            if tickers_missing_data:
                 logging.info(
                     "Detected {} tickers with all NaN values, fetching last day only: {}".format(
-                        len(nan_tickers), nan_tickers
+                        len(tickers_missing_data), tickers_missing_data
                     )
                 )
 
                 # Retry fetching with period="1d" for each NaN ticker
-                for ticker in nan_tickers:
+                for ticker in tickers_missing_data:
                     try:
                         logging.info("Fetching last day data for {}".format(ticker))
                         info = yf.Ticker(ticker).info
@@ -263,7 +266,7 @@ class Stocks(object):
                         prevDate = date.fromtimestamp(info['regularMarketTime'])
                         prevDateIndex = datetime(prevDate.year, prevDate.month, prevDate.day)
 
-                        values = [info['previousClose'], info['dayHigh'], info['dayLow'], info['open'], info['volume']]
+                        values = [info['regularMarketPrice'], info['dayHigh'], info['dayLow'], info['open'], info['volume']]
                         index = pd.DatetimeIndex([prevDateIndex], name='Date')
                         cols = pd.MultiIndex.from_product([
                             ['Close', 'High', 'Low', 'Open', 'Volume'], [ticker]
